@@ -8,7 +8,7 @@ AUTHOR = 'Tigran Zalian'
 AUTHOR_EMAIL = 'tigraanzalian@gmail.com'
 URL = 'https://github.com/TigranZalian/fastgcf'
 
-with open('requirements.txt') as f:
+with open('./requirements.txt', 'r') as f:
     INSTALL_REQUIRES = list(filter(lambda l: bool(l.strip()), f.readlines()))
 
 PACKAGES = find_packages()
