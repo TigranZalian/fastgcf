@@ -15,7 +15,6 @@ PACKAGES = find_packages()
 
 CLASSIFIERS = [
     'Intended Audience :: Developers',
-    'Framework :: Google Cloud Functions',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.6',
