@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 NAME = 'fastgcf'
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 DESCRIPTION = 'FastAPI in Google Cloud Functions'
 AUTHOR = 'Tigran Zalian'
 AUTHOR_EMAIL = 'tigraanzalian@gmail.com'
