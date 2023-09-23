@@ -1,1 +1,1 @@
-from ._proxy import router
+from ._router import router
