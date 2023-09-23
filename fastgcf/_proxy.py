@@ -102,16 +102,14 @@ def convert_httpx_response_to_flask_response(response: httpx.Response) -> flask.
     for header, value in response.headers.items():
         flask_response.headers[header] = value
 
-    for cookie in response.cookies:
+    for cookie in response.cookies.jar:
         flask_response.set_cookie(
             key=cookie.name,
             value=cookie.value,
             expires=cookie.expires,
             domain=cookie.domain,
             path=cookie.path,
-            secure=cookie.secure,
-            httponly=cookie.http_only,
-            samesite=cookie.same_site
+            secure=cookie.secure
         )
 
     return flask_response
