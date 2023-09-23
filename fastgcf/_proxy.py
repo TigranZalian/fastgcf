@@ -6,6 +6,7 @@ import functions_framework
 import functools
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable, List, Optional, Sequence
+from ._helpers import AsyncStream
 
 
 app = fastapi.FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -37,27 +38,10 @@ def convert_flask_request_to_httpx_request(request: flask.Request) -> httpx.Requ
 
     method = request.method
     url = request.url
-    form_data = request.form.to_dict(flat=False) if len(request.form) > 0 else None
-    headers = {key.lower(): value for key, value in request.headers}
-    data = request.data
+    headers = {key: value for key, value in request.headers.items(lower=True)}
     params = request.args.to_dict(flat=False)
     cookies = {key: value for key, value in request.cookies.items()}
-
-    files = []
-    for file_name, file_stream in request.files.items(multi=True):
-        file_headers = {key: value for key, value in file_stream.headers.items()}
-        files.append((file_name, (file_stream.filename, file_stream.stream, file_stream.mimetype, file_headers)))
-
-    has_files = len(files) > 0
-
-    if form_data:
-        data = form_data
-
-    if len(data) == 0:
-        data = None
-
-    if not has_files:
-        files = None
+    stream = AsyncStream(request.stream)
 
     if "content-length" in headers:
         del headers["content-length"]
@@ -66,18 +50,10 @@ def convert_flask_request_to_httpx_request(request: flask.Request) -> httpx.Requ
         method=method,
         url=url,
         headers=headers,
-        data=data,
         params=params,
         cookies=cookies,
-        files=files,
+        stream=stream
     )
-
-    # Ensure that the request is encoded as 'application/x-www-form-urlencoded'
-    # when form data is present and the 'files' object is falsy,
-    # because HTTPX doesn't treat such requests as 'multipart/form-data'
-    # even if the content type is set beforehand.
-    if not has_files and form_data is not None:
-        httpx_request.headers['content-type'] = 'application/x-www-form-urlencoded'
 
     return httpx_request
 
