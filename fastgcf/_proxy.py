@@ -166,6 +166,7 @@ def mount_entry_point(
 
     if not is_asyncio_patched:
         nest_asyncio.apply()
+        is_asyncio_patched = True
 
     global is_entry_point_mounted
 
