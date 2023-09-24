@@ -166,12 +166,12 @@ def mount_entry_point(
 
     global is_entry_point_mounted, is_asyncio_patched
 
+    if is_entry_point_mounted:
+        raise RuntimeError('Entry point is already mounted')
+
     if not is_asyncio_patched:
         nest_asyncio.apply()
         is_asyncio_patched = True
-
-    if is_entry_point_mounted:
-        raise RuntimeError('Entry point is already mounted')
 
     app.add_api_route('/', endpoint, dependencies=dependencies, methods=methods)
     is_entry_point_mounted = True
