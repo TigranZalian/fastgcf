@@ -4,17 +4,21 @@ import httpx
 import asyncio
 import functions_framework
 import functools
+import nest_asyncio
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable, List, Optional, Sequence
+from ._transport import ASGITransport
 
 
 app = fastapi.FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 is_entry_point_mounted = False
-async_client = httpx.AsyncClient(app=app, base_url='http://server')
+is_asyncio_patched = False
+asgi_transport = ASGITransport(app)
+async_client = httpx.AsyncClient(transport=asgi_transport, base_url='http://server')
 
 
 def stream_response(response: httpx.Response, chunk_size: Optional[int] = None):
-    chunk_size = chunk_size or 8192
+    chunk_size = chunk_size or 87040
     async_iterator = response.aiter_bytes(chunk_size=chunk_size)
 
     while True:
@@ -159,6 +163,9 @@ def mount_entry_point(
     Example:
         _mount_entry_point(my_endpoint_function, dependencies=[get_token])
     """
+
+    if not is_asyncio_patched:
+        nest_asyncio.apply()
 
     global is_entry_point_mounted
 
