@@ -164,11 +164,11 @@ def mount_entry_point(
         _mount_entry_point(my_endpoint_function, dependencies=[get_token])
     """
 
+    global is_entry_point_mounted, is_asyncio_patched
+
     if not is_asyncio_patched:
         nest_asyncio.apply()
         is_asyncio_patched = True
-
-    global is_entry_point_mounted
 
     if is_entry_point_mounted:
         raise RuntimeError('Entry point is already mounted')
