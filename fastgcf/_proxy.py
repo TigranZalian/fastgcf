@@ -161,7 +161,7 @@ def mount_entry_point(
         This function should typically be called only once to set up the main entry point for the application.
 
     Example:
-        _mount_entry_point(my_endpoint_function, dependencies=[get_token])
+        mount_entry_point(my_endpoint_function, dependencies=[get_token])
     """
 
     global is_entry_point_mounted, is_asyncio_patched
