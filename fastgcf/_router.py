@@ -1,6 +1,6 @@
 from typing import Optional, Sequence, List
 from ._proxy import create_handler
-import fastapi
+from fastapi.params import Depends
 
 
 class router:
@@ -35,37 +35,37 @@ class router:
     """
 
     def get(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['GET'])
 
     def put(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['PUT'])
 
     def post(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['POST'])
 
     def options(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['OPTIONS'])
 
     def head(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['HEAD'])
 
     def patch(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['PATCH'])
 
     def route(
-        dependencies: Optional[Sequence[fastapi.Depends]] = None,
+        dependencies: Optional[Sequence[Depends]] = None,
         methods: Optional[List[str]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=methods)
