@@ -5,6 +5,7 @@ import asyncio
 import functions_framework
 import functools
 import nest_asyncio
+from fastapi.params import Depends
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable, List, Optional, Sequence
 from ._transport import ASGITransport
@@ -139,7 +140,7 @@ async def proxy(flask_request: flask.Request) -> flask.Response:
 def mount_entry_point(
     endpoint: Callable[..., Any],
     *,
-    dependencies: Optional[Sequence[fastapi.Depends]] = None,
+    dependencies: Optional[Sequence[Depends]] = None,
     methods: Optional[List[str]] = None,
 ):
     """
@@ -149,7 +150,7 @@ def mount_entry_point(
 
     Args:
         endpoint (Callable[..., Any]): The function to be used as the entry point.
-        dependencies (Optional[Sequence[fastapi.Depends]], optional): A list of FastAPI dependencies.
+        dependencies (Optional[Sequence[Depends]], optional): A list of FastAPI dependencies.
             Defaults to None.
         methods (Optional[List[str]], optional): A list of HTTP methods that this entry point should respond to.
             Defaults to None.
@@ -178,7 +179,7 @@ def mount_entry_point(
 
 
 def create_handler(
-    dependencies: Optional[Sequence[fastapi.Depends]] = None,
+    dependencies: Optional[Sequence[Depends]] = None,
     methods: Optional[List[str]] = None,
 ) -> Callable[[DecoratedCallable], DecoratedCallable]:
     """
@@ -188,7 +189,7 @@ def create_handler(
     in the Google Cloud Function acting like FastAPI handler.
 
     Args:
-        dependencies (Optional[Sequence[fastapi.Depends]], optional): A list of FastAPI dependencies.
+        dependencies (Optional[Sequence[Depends]], optional): A list of FastAPI dependencies.
             Defaults to None.
         methods (Optional[List[str]], optional): A list of HTTP methods that this handler should respond to.
             Defaults to None.

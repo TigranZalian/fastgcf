@@ -34,36 +34,43 @@ class router:
     ```
     """
 
+    @staticmethod
     def get(
         dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['GET'])
 
+    @staticmethod
     def put(
         dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['PUT'])
 
+    @staticmethod
     def post(
         dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['POST'])
 
+    @staticmethod
     def options(
         dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['OPTIONS'])
 
+    @staticmethod
     def head(
         dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['HEAD'])
 
+    @staticmethod
     def patch(
         dependencies: Optional[Sequence[Depends]] = None,
     ):
         return create_handler(dependencies=dependencies, methods=['PATCH'])
 
+    @staticmethod
     def route(
         dependencies: Optional[Sequence[Depends]] = None,
         methods: Optional[List[str]] = None,
