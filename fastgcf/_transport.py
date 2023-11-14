@@ -50,6 +50,7 @@ class ASGITransport(AsyncBaseTransport):
         status_code = None
         response_headers = None
         sentinel = object()
+        should_await = False
         body_queue = asyncio.Queue()
         response_started = asyncio.Event()
         response_complete = asyncio.Event()
@@ -71,7 +72,7 @@ class ASGITransport(AsyncBaseTransport):
             return {"type": "http.request", "body": body, "more_body": True}
 
         async def send(message: typing.Dict[str, typing.Any]) -> None:
-            nonlocal status_code, response_headers, response_started, response_complete
+            nonlocal status_code, response_headers, response_started, response_complete, should_await
 
             if message["type"] == "http.response.start":
                 assert not response_started.is_set()
@@ -89,7 +90,8 @@ class ASGITransport(AsyncBaseTransport):
                     await body_queue.put(body)
 
                 if not more_body:
-                    await body_queue.put(sentinel)
+                    should_await = True
+                    body_queue.put_nowait(sentinel)
                     response_complete.set()
 
 
@@ -108,12 +110,15 @@ class ASGITransport(AsyncBaseTransport):
                 else:
                     return
 
-        asyncio.create_task(run_app())
+        run_task = asyncio.create_task(run_app())
 
         await response_started.wait()
         assert status_code is not None
         assert response_headers is not None
 
         stream = ExtendedAsyncByteStream(body_stream())
+
+        if should_await:
+            await run_task
 
         return Response(status_code, headers=response_headers, stream=stream)
