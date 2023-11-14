@@ -1,23 +1,13 @@
 import asyncio
 import typing
 import asyncio
+
 from httpx._models import Request, Response
 from httpx._transports.asgi import _ASGIApp
 from httpx._transports.base import AsyncBaseTransport
 from httpx._types import AsyncByteStream
 
-
-class ASGIResponseByteStream(AsyncByteStream):
-    def __init__(
-        self, stream: typing.AsyncGenerator[bytes, None]
-    ) -> None:
-        self._stream = stream
-
-    def __aiter__(self) -> typing.AsyncIterator[bytes]:
-        return self._stream.__aiter__()
-
-    async def aclose(self) -> None:
-        await self._stream.aclose()
+from ._streams import ExtendedAsyncByteStream
 
 
 class ASGITransport(AsyncBaseTransport):
@@ -124,6 +114,6 @@ class ASGITransport(AsyncBaseTransport):
         assert status_code is not None
         assert response_headers is not None
 
-        stream = ASGIResponseByteStream(body_stream())
+        stream = ExtendedAsyncByteStream(body_stream())
 
         return Response(status_code, headers=response_headers, stream=stream)

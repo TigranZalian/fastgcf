@@ -9,6 +9,7 @@ from fastapi.params import Depends
 from fastapi.types import DecoratedCallable
 from typing import Any, Callable, List, Optional, Sequence
 from ._transport import ASGITransport
+from ._streams import ExtendedSyncByteStream
 
 
 app = fastapi.FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -16,17 +17,6 @@ is_entry_point_mounted = False
 is_asyncio_patched = False
 asgi_transport = ASGITransport(app)
 async_client = httpx.AsyncClient(transport=asgi_transport, base_url='http://server')
-
-
-def stream_response(response: httpx.Response, chunk_size: Optional[int] = None):
-    chunk_size = chunk_size or 87040
-    async_iterator = response.aiter_bytes(chunk_size=chunk_size)
-
-    while True:
-        try:
-            yield asyncio.run(async_iterator.__anext__())
-        except StopAsyncIteration:
-            break
 
 
 def convert_flask_request_to_httpx_request(request: flask.Request) -> httpx.Request:
@@ -98,8 +88,10 @@ def convert_httpx_response_to_flask_response(response: httpx.Response) -> flask.
         flask.Response: A Flask response.
     """
 
+    response_stream = ExtendedSyncByteStream.from_async_iterator(response.aiter_bytes())
+
     flask_response = flask.Response(
-        stream_response(response),
+        response_stream,
         status=response.status_code,
         content_type=response.headers.get('content-type')
     )
