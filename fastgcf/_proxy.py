@@ -1,12 +1,8 @@
 import fastapi
 import flask
 import httpx
-import asyncio
-import functions_framework
-import functools
 import nest_asyncio
 from fastapi.params import Depends
-from fastapi.types import DecoratedCallable
 from typing import Any, Callable, List, Optional, Sequence
 from ._transport import ASGITransport
 from ._streams import ExtendedSyncByteStream
@@ -168,36 +164,3 @@ def mount_entry_point(
 
     app.add_api_route('/', endpoint, dependencies=dependencies, methods=methods)
     is_entry_point_mounted = True
-
-
-def create_handler(
-    dependencies: Optional[Sequence[Depends]] = None,
-    methods: Optional[List[str]] = None,
-) -> Callable[[DecoratedCallable], DecoratedCallable]:
-    """
-    Decorator for creating HTTP handlers that can be used as entry points.
-
-    This decorator can be used to create HTTP handlers that will be treated as entry points
-    in the Google Cloud Function acting like FastAPI handler.
-
-    Args:
-        dependencies (Optional[Sequence[Depends]], optional): A list of FastAPI dependencies.
-            Defaults to None.
-        methods (Optional[List[str]], optional): A list of HTTP methods that this handler should respond to.
-            Defaults to None.
-
-    Returns:
-        Callable[[DecoratedCallable], DecoratedCallable]: A decorator function that can be applied to a handler function.
-    """
-
-    def decorator(func: DecoratedCallable) -> DecoratedCallable:
-        mount_entry_point(func, dependencies=dependencies, methods=methods)
-        func = functions_framework.http(func)
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            return asyncio.run(proxy(flask.request))
-
-        return wrapper
-
-    return decorator

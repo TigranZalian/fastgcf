@@ -1,6 +1,7 @@
-from typing import Optional, Sequence, List
-from ._proxy import create_handler
+from typing import Callable, Optional, Sequence, List, overload
 from fastapi.params import Depends
+from fastapi.types import DecoratedCallable
+from ._handler import handler
 
 
 class router:
@@ -25,7 +26,7 @@ class router:
     from fastgcf import router
 
     # Simply use a decorator
-    @router.get()
+    @router.get
     async def main(start_date: date, end_date: date):
         await asyncio.sleep(1)  # Simulate async processing
         return {"start_date": start_date, "end_date": end_date}
@@ -34,45 +35,158 @@ class router:
     ```
     """
 
+
+    @staticmethod
+    @overload
+    def get(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def get(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
+
     @staticmethod
     def get(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=['GET'])
+        return handler(__fn, dependencies=dependencies, methods=['GET'])
+
+
+    @staticmethod
+    @overload
+    def put(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def put(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
 
     @staticmethod
     def put(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=['PUT'])
+        return handler(__fn, dependencies=dependencies, methods=['PUT'])
+    
+
+    @staticmethod
+    @overload
+    def post(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def post(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
 
     @staticmethod
     def post(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=['POST'])
+        return handler(__fn, dependencies=dependencies, methods=['POST'])
+
+
+    @staticmethod
+    @overload
+    def options(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def options(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
 
     @staticmethod
     def options(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=['OPTIONS'])
+        return handler(__fn, dependencies=dependencies, methods=['OPTIONS'])
+    
+
+    @staticmethod
+    @overload
+    def head(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def head(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
 
     @staticmethod
     def head(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=['HEAD'])
+        return handler(__fn, dependencies=dependencies, methods=['HEAD'])
+
+
+    @staticmethod
+    @overload
+    def patch(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def patch(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
 
     @staticmethod
     def patch(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=['PATCH'])
+        return handler(__fn, dependencies=dependencies, methods=['PATCH'])
+
+
+    @staticmethod
+    @overload
+    def route(__fn: DecoratedCallable) -> DecoratedCallable:
+        ...
+
+    @staticmethod
+    @overload
+    def route(
+        *,
+        dependencies: Optional[Sequence[Depends]] = None,
+        methods: Optional[List[str]] = None,
+    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
+        ...
 
     @staticmethod
     def route(
+        __fn: Optional[DecoratedCallable] = None,
+        *,
         dependencies: Optional[Sequence[Depends]] = None,
         methods: Optional[List[str]] = None,
     ):
-        return create_handler(dependencies=dependencies, methods=methods)
+        return handler(__fn, dependencies=dependencies, methods=methods)
