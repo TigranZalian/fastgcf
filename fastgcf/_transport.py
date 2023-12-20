@@ -87,7 +87,7 @@ class ASGITransport(AsyncBaseTransport):
                 more_body = message.get("more_body", False)
 
                 if body and request.method != "HEAD":
-                    await body_queue.put(body)
+                    body_queue.put_nowait(body)
 
                 if not more_body:
                     should_await = True
