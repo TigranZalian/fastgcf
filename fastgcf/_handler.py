@@ -47,9 +47,6 @@ def handler(
     """
 
     def decorator(func: DecoratedCallable) -> DecoratedCallable:
-        if not callable(func):
-            raise TypeError('{!r} is not a callable object'.format(func))
-
         mount_entry_point(func, dependencies=dependencies, methods=methods)
         func = functions_framework.http(func)
 
