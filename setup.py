@@ -1,12 +1,18 @@
 from setuptools import setup, find_packages
+from pathlib import Path
+import re
 
 
 NAME = 'fastgcf'
-VERSION = '1.0.6'
 DESCRIPTION = 'FastAPI in Google Cloud Functions'
 AUTHOR = 'Tigran Zalian'
 AUTHOR_EMAIL = 'tigraanzalian@gmail.com'
 URL = 'https://github.com/TigranZalian/fastgcf'
+
+package_dir = Path(__file__).parent / NAME
+package_init_file = package_dir / '__init__.py'
+
+VERSION = re.search(r"__version__ = '(.*)'", package_init_file.read_text()).group(1)
 
 with open('./requirements.txt', 'r') as f:
     INSTALL_REQUIRES = list(filter(lambda l: bool(l.strip()), f.readlines()))
