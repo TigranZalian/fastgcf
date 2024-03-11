@@ -18,9 +18,7 @@ def convert_flask_request_to_httpx_request(request: flask.Request) -> httpx.Requ
     url = request.url
     form_data = request.form.to_dict(flat=False) if len(request.form) > 0 else None
     headers = {key.lower(): value for key, value in request.headers}
-    data = request.data
-    params = request.args.to_dict(flat=False)
-    cookies = {key: value for key, value in request.cookies.items()}
+    data = request.data if form_data is None else form_data
 
     files = []
     for file_name, file_stream in request.files.items(multi=True):
@@ -29,25 +27,19 @@ def convert_flask_request_to_httpx_request(request: flask.Request) -> httpx.Requ
 
     has_files = len(files) > 0
 
-    if form_data:
-        data = form_data
-
     if len(data) == 0:
         data = None
 
     if not has_files:
         files = None
 
-    if "content-length" in headers:
-        del headers["content-length"]
+    headers.pop('content-length', None)
 
     httpx_request = httpx.Request(
         method=method,
         url=url,
         headers=headers,
         data=data,
-        params=params,
-        cookies=cookies,
         files=files,
     )
 
@@ -73,24 +65,9 @@ def convert_httpx_response_to_flask_response(response: httpx.Response) -> flask.
     """
 
     response_stream = ExtendedSyncByteStream.from_async_iterator(response.aiter_bytes())
-
-    flask_response = flask.Response(
-        response_stream,
-        status=response.status_code,
-        content_type=response.headers.get('content-type')
-    )
+    flask_response = flask.Response(response_stream, status=response.status_code)
 
     for header, value in response.headers.items():
         flask_response.headers[header] = value
-
-    for cookie in response.cookies.jar:
-        flask_response.set_cookie(
-            key=cookie.name,
-            value=cookie.value,
-            expires=cookie.expires,
-            domain=cookie.domain,
-            path=cookie.path,
-            secure=cookie.secure
-        )
 
     return flask_response
