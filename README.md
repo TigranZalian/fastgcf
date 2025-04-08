@@ -1,5 +1,7 @@
 # fastgcf
 
+[![PyPI Downloads](https://static.pepy.tech/badge/fastgcf)](https://pypi.org/project/fastgcf)
+
 ## Unlock the full potential of Google Cloud Functions with FastAPI and async capabilities
 
 Are you bored with using Flask for your Google Cloud Functions and you are looking for a powerful entry point with request validation and async code? The package is designed for just that, providing seamless integration with FastAPI and async code.
