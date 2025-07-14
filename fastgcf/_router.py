@@ -1,7 +1,9 @@
-from typing import Callable, Optional, Sequence, List, overload
+from typing import ClassVar, Callable, Optional, Sequence, List, overload
+from fastapi import FastAPI
 from fastapi.params import Depends
 from fastapi.types import DecoratedCallable
 from ._handler import handler
+from ._proxy import app as _fastapi_app
 
 
 class router:
@@ -34,6 +36,8 @@ class router:
     # That's it! Your Google Cloud Function is ready to handle and validate async GET requests seamlessly.
     ```
     """
+
+    fastapi: ClassVar[FastAPI] = _fastapi_app
 
 
     @staticmethod
